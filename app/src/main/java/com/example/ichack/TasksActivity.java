@@ -108,7 +108,7 @@ public class TasksActivity extends AppCompatActivity {
 //        loadPoints();
 
 //        loadTasks();
-//        showTasks();
+        showTasks();
 
         leaderboardButton.setOnClickListener(new View.OnClickListener() {
             @Override
