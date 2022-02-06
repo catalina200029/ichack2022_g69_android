@@ -8,31 +8,24 @@ import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager.widget.ViewPager;
-
 import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-
 import android.view.View;
-import android.view.ViewParent;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.toolbox.StringRequest;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 
 import java.io.UnsupportedEncodingException;
 
-public class MainActivity extends AppCompatActivity {
+public class WaitActivity extends AppCompatActivity {
 
     public static final String ERROR_DETECTED = "No NFC tag detected!";
     public static final String WRITE_SUCCESS = "Text written to the NFC tag successfully!";
@@ -54,26 +47,19 @@ public class MainActivity extends AppCompatActivity {
     Button submitButton;
     Button backButton;
 
-    String[] questions = {"hihihi", "huhuhu", "hahaha"};
+    String[] questions = {"how s your mum", "good", ":("};
     String NFC_ID;
-
-    String url = "https://ichack22-backend.herokuapp.com/";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_wait);
         context = this;
 
         tvNFCContent = (TextView) findViewById(R.id.nfc_contents);
         messageTextview = (TextView) findViewById(R.id.message_textview);
         questionsViewPager = (ViewPager) findViewById(R.id.questionViewPager);
         questionsFrameLayout = (LinearLayout) findViewById(R.id.questionsFrameLayout);
-
-        /*StringRequest questionsRequest = new StringRequest(Request.Method.GET, url,
-                response -> Toast.makeText(MainActivity.this, "SUCCESS", Toast.LENGTH_LONG).show(),
-                error -> Toast.makeText(MainActivity.this, "ERROR", Toast.LENGTH_LONG).show());*/
-
 
         leftNav = (ImageButton) findViewById(R.id.left_nav);
         rightNav = (ImageButton) findViewById(R.id.right_nav);
