@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
+
+import java.util.ArrayList;
 import java.util.Objects;
 
 class QuestionsAdapter extends PagerAdapter {
@@ -20,7 +22,7 @@ class QuestionsAdapter extends PagerAdapter {
     Context context;
 
     // Array of images
-    String[] questions;
+    ArrayList<String> questions;
 
     // Layout Inflater
     LayoutInflater mLayoutInflater;
@@ -29,7 +31,7 @@ class QuestionsAdapter extends PagerAdapter {
 
 
     // Viewpager Constructor
-    public QuestionsAdapter(Context context, String[] questions, TextWatcher watcher) {
+    public QuestionsAdapter(Context context, ArrayList<String> questions, TextWatcher watcher) {
         this.context = context;
         this.questions = questions;
         mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -44,7 +46,7 @@ class QuestionsAdapter extends PagerAdapter {
     @Override
     public int getCount() {
         // return the number of images
-        return questions.length;
+        return questions.size();
     }
 
     @Override
@@ -67,7 +69,7 @@ class QuestionsAdapter extends PagerAdapter {
 
         // setting the text in the textView
         questionNumberTextView.setText("Question " + (position + 1) + "/" + getCount());
-        questionTextView.setText(questions[position]);
+        questionTextView.setText(questions.get(position));
 
         // Adding the View
         Objects.requireNonNull(container).addView(itemView);

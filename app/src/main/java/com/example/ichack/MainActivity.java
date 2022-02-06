@@ -18,25 +18,32 @@ import android.text.TextWatcher;
 import android.util.Log;
 
 import android.view.View;
-import android.view.ViewParent;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String ERROR_DETECTED = "No NFC tag detected!";
-    public static final String WRITE_SUCCESS = "Text written to the NFC tag successfully!";
-    public static final String WRITE_ERROR = "Error during writing, is the NFC tag close enough to your device?";
+
     NfcAdapter nfcAdapter;
     PendingIntent pendingIntent;
     IntentFilter writeTagFilters[];
@@ -54,69 +61,28 @@ public class MainActivity extends AppCompatActivity {
     Button submitButton;
     Button backButton;
 
-    String[] questions = {"hihihi", "huhuhu", "hahaha"};
+    ArrayList<String> questions;
     String NFC_ID;
 
-    String url = "https://ichack22-backend.herokuapp.com/";
+    String url = "https://ichack22-backend.herokuapp.com";
+    RequestQueue reqQueue;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = this;
+        reqQueue = Volley.newRequestQueue(context);
 
-        tvNFCContent = (TextView) findViewById(R.id.nfc_contents);
+        initNFC();
+        initQuestions();
+        System.out.println("HELLO INT INT");
+    }
+
+    private void initNFC(){
         messageTextview = (TextView) findViewById(R.id.message_textview);
-        questionsViewPager = (ViewPager) findViewById(R.id.questionViewPager);
-        questionsFrameLayout = (LinearLayout) findViewById(R.id.questionsFrameLayout);
-
-        /*StringRequest questionsRequest = new StringRequest(Request.Method.GET, url,
-                response -> Toast.makeText(MainActivity.this, "SUCCESS", Toast.LENGTH_LONG).show(),
-                error -> Toast.makeText(MainActivity.this, "ERROR", Toast.LENGTH_LONG).show());*/
-
-
-        leftNav = (ImageButton) findViewById(R.id.left_nav);
-        rightNav = (ImageButton) findViewById(R.id.right_nav);
-
-        submitButton = (Button) findViewById(R.id.submitButton);
-        backButton = (Button) findViewById(R.id.backButton);
-
-        questionsAdapter = new QuestionsAdapter(this, questions, watcher);
-        questionsViewPager.setOffscreenPageLimit(questions.length);
-        questionsViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                int tab = questionsViewPager.getCurrentItem();
-
-                if (tab == 0) {
-                    leftNav.setVisibility(View.INVISIBLE);
-                } else {
-                    leftNav.setVisibility(View.VISIBLE);
-                }
-
-                if (tab == questionsAdapter.getCount() - 1) {
-                    rightNav.setVisibility(View.INVISIBLE);
-                } else {
-                    rightNav.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-
-        questionsViewPager.setAdapter(questionsAdapter);
-
-        questionsFrameLayout.setVisibility(View.GONE);
-
-        leftNav.setVisibility(View.INVISIBLE);
+        tvNFCContent = (TextView) findViewById(R.id.nfc_contents);
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (nfcAdapter == null) {
@@ -124,6 +90,55 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "This device doesn't support NFC.", Toast.LENGTH_LONG).show();
             finish();
         }
+
+        pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+        tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
+        writeTagFilters = new IntentFilter[] { tagDetected };
+
+    }
+
+    private void showNFC(){
+        tvNFCContent.setText(NFC_ID);
+        tvNFCContent.setVisibility(View.VISIBLE);
+        messageTextview.setText("Your ID is");
+    }
+
+    private final TextWatcher watcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after)
+        {}
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count)
+        {}
+        @Override
+        public void afterTextChanged(Editable s) {
+            EditText[] editTexts = questionsAdapter.getEditTexts();
+            boolean allQuestionsCompleted = true;
+
+            for (int i = 0; i < questionsAdapter.getCount(); ++i) {
+                if (editTexts[i].getText() == null || editTexts[i].getText().toString().trim().length() == 0) {
+                    allQuestionsCompleted = false;
+                    break;
+                }
+            }
+
+            submitButton.setEnabled(allQuestionsCompleted);
+        }
+    };
+
+    private void initQuestions(){
+        questionsViewPager = (ViewPager) findViewById(R.id.questionViewPager);
+        questionsFrameLayout = (LinearLayout) findViewById(R.id.questionsFrameLayout);
+        questionsFrameLayout.setVisibility(View.GONE);
+
+        leftNav = (ImageButton) findViewById(R.id.left_nav);
+        leftNav.setVisibility(View.INVISIBLE);
+        rightNav = (ImageButton) findViewById(R.id.right_nav);
+
+        submitButton = (Button) findViewById(R.id.submitButton);
+        backButton = (Button) findViewById(R.id.backButton);
+
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -168,39 +183,96 @@ public class MainActivity extends AppCompatActivity {
                 questionsViewPager.setCurrentItem(tab);
             }
         });
+    }
 
-        pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
-        tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
-        writeTagFilters = new IntentFilter[] { tagDetected };
+
+    public static String getStatus(String url) throws IOException {
+
+        String result = "";
+        try {
+
+            URL urlObj = new URL(url);
+            HttpURLConnection con = (HttpURLConnection) urlObj.openConnection();
+            con.setRequestMethod("GET");
+            // Set connection timeout
+            con.setConnectTimeout(3000);
+            con.connect();
+
+            int code = con.getResponseCode();
+            result = "" + code;
+            if (code == 200) {
+                result = "On";
+            }
+        } catch (Exception e) {
+            result = "Off";
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    private void processQuestions(JSONObject response){
+        try {
+            JSONArray questionArray = response.getJSONArray("questions");
+
+            for (int i = 0; i < questionArray.length(); i++)
+                questions.add(questionArray.getString(i));
+        } catch(JSONException e){
+            Toast.makeText(context, "Failed to process JSON", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+
+    private void loadQuestions(){
+        questions = new ArrayList<>();
+
+        JsonObjectRequest questionRequest = new JsonObjectRequest(Request.Method.GET, url + "/game/get_questions", null,
+                response -> {processQuestions(response); showQuestions();},
+                error -> {Toast.makeText(context, "Error connecting to server", Toast.LENGTH_SHORT).show();});
+
+        reqQueue.add(questionRequest);
+    }
+
+    private void showQuestions(){
+        questionsAdapter = new QuestionsAdapter(this, questions, watcher);
+        questionsViewPager.setOffscreenPageLimit(questions.size());
+        questionsViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                int tab = questionsViewPager.getCurrentItem();
+
+                if (tab == 0) {
+                    leftNav.setVisibility(View.INVISIBLE);
+                } else {
+                    leftNav.setVisibility(View.VISIBLE);
+                }
+
+                if (tab == questionsAdapter.getCount() - 1) {
+                    rightNav.setVisibility(View.INVISIBLE);
+                } else {
+                    rightNav.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+        questionsViewPager.setAdapter(questionsAdapter);
+
+        questionsFrameLayout.setVisibility(View.VISIBLE);
+        submitButton.setVisibility(View.VISIBLE);
+        backButton.setVisibility(View.VISIBLE);
     }
 
     private boolean inGame(String NFC_ID) {
         return false;
     }
-
-    private final TextWatcher watcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after)
-        {}
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count)
-        {}
-        @Override
-        public void afterTextChanged(Editable s) {
-            EditText[] editTexts = questionsAdapter.getEditTexts();
-            boolean allQuestionsCompleted = true;
-
-            for (int i = 0; i < questionsAdapter.getCount(); ++i) {
-                if (editTexts[i].getText() == null || editTexts[i].getText().toString().trim().length() == 0) {
-                    allQuestionsCompleted = false;
-                    break;
-                }
-            }
-
-            submitButton.setEnabled(allQuestionsCompleted);
-        }
-    };
 
     /******************************************************************************
      **********************************Read From NFC Tag***************************
@@ -240,31 +312,27 @@ public class MainActivity extends AppCompatActivity {
             Log.e("UnsupportedEncoding", e.toString());
         }
 
-        tvNFCContent.setText(text);
-
         return text;
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
+        System.out.println("HELLOOOOO");
         super.onNewIntent(intent);
         setIntent(intent);
         NFC_ID = readFromIntent(intent);
-
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
             myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         }
-        tvNFCContent.setVisibility(View.VISIBLE);
+        showNFC();
 
         if (inGame(NFC_ID)) {
             // TODO
         } else {
-            questionsFrameLayout.setVisibility(View.VISIBLE);
-            submitButton.setVisibility(View.VISIBLE);
+            loadQuestions();
         }
-        backButton.setVisibility(View.VISIBLE);
-        messageTextview.setText("Your ID is");
     }
+
 
     @Override
     public void onPause(){
