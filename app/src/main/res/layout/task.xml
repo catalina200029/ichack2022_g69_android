@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10sp"
+    android:background="@drawable/border"
+    android:layout_margin="5sp">
+
+    <TextView
+        android:id="@+id/taskName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="task name"
+        android:gravity="center_vertical"
+        android:drawableLeft="@drawable/ic_baseline_check_24"
+    />
+
+</LinearLayout>

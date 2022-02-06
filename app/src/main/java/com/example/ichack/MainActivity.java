@@ -36,6 +36,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -278,6 +279,7 @@ public class MainActivity extends AppCompatActivity {
      **********************************Read From NFC Tag***************************
      ******************************************************************************/
     private String readFromIntent(Intent intent) {
+        //startActivity(new Intent(context, TasksActivity.class));
         String action = intent.getAction();
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
                 || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)

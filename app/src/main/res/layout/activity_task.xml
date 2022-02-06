@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:layout_marginVertical="20sp">
+
+    <Button
+        android:id="@+id/backButton"
+        android:layout_width="50sp"
+        android:layout_height="50sp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="@android:color/transparent"
+        android:drawableLeft="@drawable/ic_baseline_arrow_back_24"
+        android:visibility="visible" />
+
+    <TextView
+        android:id="@+id/message_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/backButton"
+        android:layout_above="@id/instructions_textview"
+        android:text="Task 1"
+        android:textAlignment="center"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/instructions_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Find the student with the following attributes. If you guess right you both get a point, otherwise you both lose a point. To guess, scan their NFC!"
+        android:textAlignment="center"
+        android:layout_below="@+id/backButton"
+        android:textSize="15sp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/taskRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/wrong_guesses"
+        android:layout_below="@+id/instructions_textview"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        android:paddingVertical="30sp" />
+
+    <TextView
+        android:id="@+id/wrong_guesses"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="0 wrong guesses"
+        android:layout_alignParentBottom="true"
+        android:textSize="15sp"
+        android:padding="10sp"/>
+</RelativeLayout>
