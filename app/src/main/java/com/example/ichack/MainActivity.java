@@ -71,6 +71,34 @@ public class MainActivity extends AppCompatActivity {
 
         questionsAdapter = new QuestionsAdapter(this, questions, watcher);
         questionsViewPager.setOffscreenPageLimit(questions.length);
+        questionsViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                int tab = questionsViewPager.getCurrentItem();
+
+                if (tab == 0) {
+                    leftNav.setVisibility(View.INVISIBLE);
+                } else {
+                    leftNav.setVisibility(View.VISIBLE);
+                }
+
+                if (tab == questionsAdapter.getCount() - 1) {
+                    rightNav.setVisibility(View.INVISIBLE);
+                } else {
+                    rightNav.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
         questionsViewPager.setAdapter(questionsAdapter);
 
@@ -85,6 +113,13 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
 
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: send data to server
+            }
+        });
+
         leftNav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,12 +128,6 @@ public class MainActivity extends AppCompatActivity {
                 if (tab > 0) {
                     --tab;
                 }
-
-                if (tab == 0) {
-                    leftNav.setVisibility(View.INVISIBLE);
-                }
-
-                rightNav.setVisibility(View.VISIBLE);
 
                 questionsViewPager.setCurrentItem(tab);
             }
@@ -113,12 +142,6 @@ public class MainActivity extends AppCompatActivity {
                 if (tab < questionsAdapter.getCount() - 1) {
                     ++tab;
                 }
-
-                if (tab == questionsAdapter.getCount() - 1) {
-                    rightNav.setVisibility(View.INVISIBLE);
-                }
-
-                leftNav.setVisibility(View.VISIBLE);
 
                 questionsViewPager.setCurrentItem(tab);
             }
