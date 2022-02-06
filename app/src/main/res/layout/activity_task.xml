@@ -19,8 +19,8 @@
         android:id="@+id/message_textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/backButton"
         android:layout_above="@id/instructions_textview"
+        android:layout_toRightOf="@id/backButton"
         android:text="Task 1"
         android:textAlignment="center"
         android:textSize="20sp" />

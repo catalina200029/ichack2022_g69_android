@@ -15,6 +15,7 @@
         android:text="Question"
         android:gravity="center_vertical"
         android:textStyle="bold"
+        android:textSize="20sp"
         />
 
     <TextView
@@ -23,6 +24,7 @@
         android:layout_height="wrap_content"
         android:text="Answer"
         android:gravity="center_vertical"
+        android:textSize="20sp"
         />
 
 </LinearLayout>

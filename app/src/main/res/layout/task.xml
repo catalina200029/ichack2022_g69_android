@@ -14,6 +14,8 @@
         android:text="task name"
         android:gravity="center_vertical"
         android:drawableLeft="@drawable/ic_baseline_check_24"
+        android:padding="5sp"
+        android:textSize="20sp"
     />
 
 </LinearLayout>
