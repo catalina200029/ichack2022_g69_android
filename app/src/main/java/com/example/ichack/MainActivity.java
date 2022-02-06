@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         context = this;
         reqQueue = Volley.newRequestQueue(context);
 
-        startActivity(new Intent(context, TasksActivity.class));
+//        startActivity(new Intent(context, TasksActivity.class));
 
         initNFC();
         initQuestions();

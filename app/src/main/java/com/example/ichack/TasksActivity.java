@@ -50,14 +50,14 @@ public class TasksActivity extends AppCompatActivity {
     String url = "https://ichack22-backend.herokuapp.com";
     RequestQueue reqQueue;
 
-//    List<TaskAttribute> taskAttributeList1 = new ArrayList<>();
-//    List<TaskAttribute> taskAttributeList2 = new ArrayList<>();
-//    List<TaskAttribute> taskAttributeList3 = new ArrayList<>();
+    List<TaskAttribute> taskAttributeList1 = new ArrayList<>();
+    List<TaskAttribute> taskAttributeList2 = new ArrayList<>();
+    List<TaskAttribute> taskAttributeList3 = new ArrayList<>();
 
     Task[] tasks = {
-//            new Task(taskAttributeList1, true, 3),
-//            new Task(taskAttributeList2, false, 77),
-//            new Task(taskAttributeList3, true, 100)
+            new Task(taskAttributeList1, true, 3),
+            new Task(taskAttributeList2, false, 77),
+            new Task(taskAttributeList3, true, 100)
     };
 
     // TODO: remove init
@@ -87,17 +87,17 @@ public class TasksActivity extends AppCompatActivity {
 //            System.out.println(e.getMessage());
 //        }
 
-//        taskAttributeList1.add(new TaskAttribute(NFC_ID, "a1.1"));
-//        taskAttributeList1.add(new TaskAttribute("q1.2", "a1.2"));
-//        taskAttributeList1.add(new TaskAttribute("q1.3", "a1.3"));
-//
-//        taskAttributeList2.add(new TaskAttribute("q2.1", "a1.1"));
-//        taskAttributeList2.add(new TaskAttribute("q2.2", "a2.2"));
-//        taskAttributeList2.add(new TaskAttribute("q2.3", "a2.3"));
-//
-//        taskAttributeList3.add(new TaskAttribute("q3.1", "a3.1"));
-//        taskAttributeList3.add(new TaskAttribute("q3.2", "a3.2"));
-//        taskAttributeList3.add(new TaskAttribute("q3.3", "a3.3"));
+        taskAttributeList1.add(new TaskAttribute(NFC_ID, "a1.1"));
+        taskAttributeList1.add(new TaskAttribute("q1.2", "a1.2"));
+        taskAttributeList1.add(new TaskAttribute("q1.3", "a1.3"));
+
+        taskAttributeList2.add(new TaskAttribute("q2.1", "a1.1"));
+        taskAttributeList2.add(new TaskAttribute("q2.2", "a2.2"));
+        taskAttributeList2.add(new TaskAttribute("q2.3", "a2.3"));
+
+        taskAttributeList3.add(new TaskAttribute("q3.1", "a3.1"));
+        taskAttributeList3.add(new TaskAttribute("q3.2", "a3.2"));
+        taskAttributeList3.add(new TaskAttribute("q3.3", "a3.3"));
 
         tvNFCContent = (TextView) findViewById(R.id.nfc_contents);
         leaderboardButton = (Button) findViewById(R.id.leaderboardButton);
@@ -105,10 +105,10 @@ public class TasksActivity extends AppCompatActivity {
 
         tasksRecyclerView = (RecyclerView) findViewById(R.id.tasksRecyclerView);
 
-        loadPoints();
+//        loadPoints();
 
-        loadTasks();
-        showTasks();
+//        loadTasks();
+//        showTasks();
 
         leaderboardButton.setOnClickListener(new View.OnClickListener() {
             @Override
