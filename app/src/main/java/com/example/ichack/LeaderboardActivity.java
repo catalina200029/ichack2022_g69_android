@@ -1,6 +1,7 @@
 package com.example.ichack;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -8,6 +9,7 @@ import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.navigation.NavController;
@@ -32,6 +34,7 @@ public class LeaderboardActivity extends AppCompatActivity {
     TextView positionTextView;
     TextView personTextView;
     TextView pointsTextView;
+    Button backButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +64,8 @@ public class LeaderboardActivity extends AppCompatActivity {
         personTextView = (TextView) findViewById(R.id.person);
         pointsTextView = (TextView) findViewById(R.id.points);
 
+        backButton = (Button) findViewById(R.id.backButton);
+
         int position = getPlayerPosition(NFC_ID);
 
         positionTextView.setText(Integer.toString(position + 1));
@@ -72,6 +77,16 @@ public class LeaderboardActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(leaderboardAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, TasksActivity.class);
+                intent.putExtra("nfc", NFC_ID);
+                startActivity(intent);
+
+            }
+        });
     }
 
     public int getPlayerPosition(String nfc_id) {
