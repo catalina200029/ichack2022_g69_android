@@ -54,10 +54,11 @@ public class TasksActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tasks);
         context = this;
 
-//        TODO: uncomment next line
-//        NFC_ID = getIntent().getStringExtra("nfc");
+        NFC_ID = getIntent().getStringExtra("nfc");
+        NFC_ID = getIntent().getStringExtra("json_data");
 
-        taskAttributeList1.add(new TaskAttribute("q1.1", "a1.1"));
+
+        taskAttributeList1.add(new TaskAttribute(NFC_ID, "a1.1"));
         taskAttributeList1.add(new TaskAttribute("q1.2", "a1.2"));
         taskAttributeList1.add(new TaskAttribute("q1.3", "a1.3"));
 

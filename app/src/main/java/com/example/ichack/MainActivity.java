@@ -25,9 +25,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.RetryPolicy;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 
@@ -41,6 +44,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -78,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
 
         initNFC();
         initQuestions();
-        System.out.println("HELLO INT INT");
     }
 
     private void initNFC(){
@@ -154,7 +157,35 @@ public class MainActivity extends AppCompatActivity {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: send data to server
+                EditText[] editTexts = questionsAdapter.getEditTexts();
+                JSONArray answers = new JSONArray();
+                for (int i = 0; i < questionsAdapter.getCount(); ++i){
+                    answers.put(editTexts[i].getText().toString());
+                }
+                JSONObject message = new JSONObject();
+                try {
+                    message.put("uid", NFC_ID);
+                    message.put("answers", answers);
+                    System.out.println(message.toString());
+                } catch (JSONException e) {
+                    Toast.makeText(context, "Failed to process JSON", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+
+                JsonObjectRequest answersRequest = new JsonObjectRequest(Request.Method.POST, url + "/game/register_player/", message,
+                        response -> {
+                            try{
+                                System.out.println("HELLO " + response.toString() + " ## " + response.getString("uid"));
+                            } catch(JSONException e){
+                                e.printStackTrace();
+                            }
+                            Toast.makeText(context, "Yaaaay", Toast.LENGTH_SHORT).show();
+                            tryLogin();
+                            },
+
+                        error -> {error.printStackTrace();Toast.makeText(context, "Error connecting to server", Toast.LENGTH_SHORT).show();});
+                answersRequest.setRetryPolicy(new DefaultRetryPolicy(3000, 5, 1.0f));
+                reqQueue.add(answersRequest);
             }
         });
 
@@ -186,31 +217,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
-    public static String getStatus(String url) throws IOException {
-
-        String result = "";
-        try {
-
-            URL urlObj = new URL(url);
-            HttpURLConnection con = (HttpURLConnection) urlObj.openConnection();
-            con.setRequestMethod("GET");
-            // Set connection timeout
-            con.setConnectTimeout(3000);
-            con.connect();
-
-            int code = con.getResponseCode();
-            result = "" + code;
-            if (code == 200) {
-                result = "On";
-            }
-        } catch (Exception e) {
-            result = "Off";
-            e.printStackTrace();
-        }
-        return result;
-    }
-
     private void processQuestions(JSONObject response){
         try {
             JSONArray questionArray = response.getJSONArray("questions");
@@ -224,12 +230,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadQuestions(){
+        System.out.println("Loading questions");
         questions = new ArrayList<>();
 
-        JsonObjectRequest questionRequest = new JsonObjectRequest(Request.Method.GET, url + "/game/get_questions", null,
+        JsonObjectRequest questionRequest = new JsonObjectRequest(Request.Method.GET, url + "/game/get_questions/", null,
                 response -> {processQuestions(response); showQuestions();},
                 error -> {Toast.makeText(context, "Error connecting to server", Toast.LENGTH_SHORT).show();});
-
+        questionRequest.setRetryPolicy(new DefaultRetryPolicy(3000, 5, 1.0f));
         reqQueue.add(questionRequest);
     }
 
@@ -271,8 +278,52 @@ public class MainActivity extends AppCompatActivity {
         backButton.setVisibility(View.VISIBLE);
     }
 
-    private boolean inGame(String NFC_ID) {
-        return false;
+    private void gotoTasks(String login_json){
+        Intent taskIntent = new Intent(context, TasksActivity.class);
+        taskIntent.putExtra("nfc", NFC_ID);
+        taskIntent.putExtra("json_data", login_json);
+        startActivity(taskIntent);
+    }
+
+
+    private void goWait(){
+        Intent waitIntent = new Intent(context, TasksActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("uid", NFC_ID);
+        waitIntent.putExtras(bundle);
+        startActivity(waitIntent);
+    }
+
+    private void tryLogin(){
+        System.out.println("Trying log in");
+        JSONObject id = new JSONObject();
+        try {
+            id.put("uid", NFC_ID);
+        } catch(JSONException e){
+            e.printStackTrace();
+        }
+        JsonObjectRequest loginRequest = new JsonObjectRequest(Request.Method.POST, url + "/game/login_player/", id,
+                response -> {
+                    try {
+                        if (response.getBoolean("game_started")){
+                            gotoTasks(response.toString());
+                        }
+                        else{
+                            goWait();
+                        }
+                    } catch(JSONException e){
+                        e.printStackTrace();
+                    }
+
+                },
+                error -> {
+                    if (error.networkResponse.statusCode == 500){
+                        loadQuestions();
+                    }
+                    else{
+                        Toast.makeText(context, "Error connecting to server", Toast.LENGTH_SHORT).show();
+                    }});
+        reqQueue.add(loginRequest);
     }
 
     /******************************************************************************
@@ -319,7 +370,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onNewIntent(Intent intent) {
-        System.out.println("HELLOOOOO");
         super.onNewIntent(intent);
         setIntent(intent);
         NFC_ID = readFromIntent(intent);
@@ -327,12 +377,7 @@ public class MainActivity extends AppCompatActivity {
             myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         }
         showNFC();
-
-        if (inGame(NFC_ID)) {
-            // TODO
-        } else {
-            loadQuestions();
-        }
+        tryLogin();
     }
 
 
