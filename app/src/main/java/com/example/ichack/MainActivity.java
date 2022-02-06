@@ -28,9 +28,7 @@ import android.widget.Toast;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.RetryPolicy;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 
@@ -38,13 +36,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.stream.Stream;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -184,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
                             tryLogin();
                             },
 
-                        error -> {error.printStackTrace();Toast.makeText(context, "Error connecting to server", Toast.LENGTH_SHORT).show();});
+                        error -> {System.out.println("answers error");error.printStackTrace();Toast.makeText(context, "Error connecting to server", Toast.LENGTH_SHORT).show();});
                 answersRequest.setRetryPolicy(new DefaultRetryPolicy(3000, 5, 1.0f));
                 reqQueue.add(answersRequest);
             }
@@ -236,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
 
         JsonObjectRequest questionRequest = new JsonObjectRequest(Request.Method.GET, url + "/game/get_questions/", null,
                 response -> {processQuestions(response); showQuestions();},
-                error -> {Toast.makeText(context, "Error connecting to server", Toast.LENGTH_SHORT).show();});
+                error -> {System.out.println("questions error");Toast.makeText(context, "Error connecting to server", Toast.LENGTH_SHORT).show();});
         questionRequest.setRetryPolicy(new DefaultRetryPolicy(3000, 5, 1.0f));
         reqQueue.add(questionRequest);
     }
@@ -280,6 +274,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void gotoTasks(String login_json){
+        System.out.println("HELLOO))))) GOTO ADDDDADAD");
         Intent taskIntent = new Intent(context, TasksActivity.class);
         taskIntent.putExtra("nfc", NFC_ID);
         taskIntent.putExtra("json_data", login_json);
@@ -288,7 +283,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void goWait(){
-        Intent waitIntent = new Intent(context, TasksActivity.class);
+        System.out.println("HELLOO))))) GOTO");
+        Intent waitIntent = new Intent(context, WaitActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("uid", NFC_ID);
         waitIntent.putExtras(bundle);
@@ -307,6 +303,7 @@ public class MainActivity extends AppCompatActivity {
                 response -> {
                     try {
                         if (response.getBoolean("game_started")){
+                            System.out.println("HELLOOO" + response.getBoolean("game_started"));
                             gotoTasks(response.toString());
                         }
                         else{
@@ -318,8 +315,18 @@ public class MainActivity extends AppCompatActivity {
 
                 },
                 error -> {
+                    System.out.println("login error");
                     if (error.networkResponse.statusCode == 500){
-                        loadQuestions();
+                        try {
+                            loadQuestions();
+                            JSONObject j = new JSONObject(error.networkResponse.data.toString());
+                            if (j.getInt("code") == 801)
+                                loadQuestions();
+                            else
+                                Toast.makeText(context, "Error connecting to server", Toast.LENGTH_SHORT).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                     else{
                         Toast.makeText(context, "Error connecting to server", Toast.LENGTH_SHORT).show();
