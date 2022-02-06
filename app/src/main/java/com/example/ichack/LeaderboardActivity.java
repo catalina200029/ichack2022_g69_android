@@ -29,7 +29,9 @@ public class LeaderboardActivity extends AppCompatActivity {
 
     String[] players;
     int[] points;
-    String NFC_ID = "350UDE8RTQ";
+
+    String NFC_ID;
+    String json_data;
 
     TextView positionTextView;
     TextView personTextView;
@@ -58,6 +60,9 @@ public class LeaderboardActivity extends AppCompatActivity {
         points[4] = 20;
         points[5] = 10;
 
+        NFC_ID = getIntent().getStringExtra("nfc");
+        json_data = getIntent().getStringExtra("json_data");
+
         recyclerView = (RecyclerView) findViewById(R.id.leaderboardRecycleView);
 
         positionTextView = (TextView) findViewById(R.id.position);
@@ -83,6 +88,7 @@ public class LeaderboardActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(context, TasksActivity.class);
                 intent.putExtra("nfc", NFC_ID);
+                intent.putExtra("json_data", json_data);
                 startActivity(intent);
 
             }

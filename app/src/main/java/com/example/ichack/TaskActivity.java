@@ -22,6 +22,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.io.UnsupportedEncodingException;
@@ -50,6 +58,9 @@ public class TaskActivity extends AppCompatActivity {
     Task task;
 
     String NFC_ID;
+
+    String url = "https://ichack22-backend.herokuapp.com";
+    RequestQueue reqQueue;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,10 +94,7 @@ public class TaskActivity extends AppCompatActivity {
 
         wrong_guesses.setText(task.wrong_guesses + " wrong guesses");
 
-        taskAdapter = new TaskAdapter(this, task);
-
-        taskRecyclerView.setAdapter(taskAdapter);
-        taskRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        showTask();
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,6 +119,41 @@ public class TaskActivity extends AppCompatActivity {
         writeTagFilters = new IntentFilter[] { tagDetected };
 
 
+    }
+
+    private void verifyTask(String scanned_Id, String question, String answer) {
+        System.out.println("Verifying task");
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("uid", NFC_ID);
+            jsonObject.put("scannedId", scanned_Id);
+            jsonObject.put("question", question);
+            jsonObject.put("answer", answer);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        JsonObjectRequest taskRequest = new JsonObjectRequest(Request.Method.GET, url + "/game/players_can/", jsonObject,
+                response -> {processTask(response); showTask();},
+                error -> {Toast.makeText(context, "Error connecting to server", Toast.LENGTH_SHORT).show();});
+        taskRequest.setRetryPolicy(new DefaultRetryPolicy(3000, 5, 1.0f));
+        reqQueue.add(taskRequest);
+    }
+
+    public void showTask() {
+        taskAdapter = new TaskAdapter(this, task);
+
+        taskRecyclerView.setAdapter(taskAdapter);
+        taskRecyclerView.setLayoutManager(new LinearLayoutManager(this));    }
+
+    private void processTask(JSONObject response) {
+        try {
+            task.done = response.getBoolean("match");
+        } catch(JSONException e){
+            Toast.makeText(context, "Failed to process JSON", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
     }
 
     /******************************************************************************
@@ -180,7 +223,9 @@ public class TaskActivity extends AppCompatActivity {
             myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         }
 
-        if (isAGoodNFC(guesses_nfc_id)) {
+        verifyTask(guesses_nfc_id, task.taskAttributes.get(0).question, task.taskAttributes.get(0).answer);
+
+        if (task.done) {
             markTaskAsFinished();
             openDialog("Congratulations", "You finished the task!");
         } else {
