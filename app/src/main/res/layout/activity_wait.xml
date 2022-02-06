@@ -5,82 +5,38 @@
     android:orientation="vertical"
     android:layout_marginVertical="20sp">
 
-    <Button
-        android:id="@+id/backButton"
-        android:layout_width="50sp"
-        android:layout_height="50sp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:background="@android:color/transparent"
-        android:visibility="gone"
-        android:drawableLeft="@drawable/ic_baseline_arrow_back_24" />
 
     <TextView
         android:id="@+id/message_textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/backButton"
-        android:text="Please scan your NFC"
+        android:text="Please wait for the game to start"
         android:textAlignment="center"
         android:textSize="20sp" />
 
-    <TextView
-        android:id="@+id/nfc_contents"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:textSize="30sp"
-        android:text="abc"
-        android:visibility="gone"
-        android:layout_below="@+id/message_textview"
-        android:layout_toRightOf="@+id/backButton"
-    />
-
-    <LinearLayout
-        android:id="@+id/questionsFrameLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="center"
-        android:layout_below="@+id/nfc_contents"
-        android:layout_above="@+id/submitButton"
-        android:paddingVertical="30sp">
-
-        <ImageButton
-            android:id="@+id/left_nav"
-            android:layout_width="0dip"
-            android:layout_weight="0.1"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|left"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_baseline_arrow_back_ios_24"/>
-
-        <!-- viewpager to show images -->
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/questionViewPager"
-            android:layout_width="0dip"
-            android:layout_weight="0.8"
-            android:layout_height="match_parent"/>
-
-        <ImageButton
-            android:id="@+id/right_nav"
-            android:layout_width="0dip"
-            android:layout_weight="0.1"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|right"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_baseline_arrow_forward_ios_24" />
-
-    </LinearLayout>
 
     <Button
-        android:id="@+id/submitButton"
+        android:id="@+id/refreshButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_margin="20sp"
-        android:text="Submit"
-        android:visibility="invisible"
-        android:enabled="false"/>
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="20sp"
+        android:layout_marginTop="20sp"
+        android:layout_marginEnd="20sp"
+        android:layout_marginBottom="20sp"
+        android:text="Refresh"
+        android:visibility="visible" />
+    <Button
+        android:id="@+id/nextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="20sp"
+        android:layout_marginTop="20sp"
+        android:layout_marginEnd="20sp"
+        android:layout_marginBottom="20sp"
+        android:text="Next"
+        android:visibility="visible" />
 </RelativeLayout>
