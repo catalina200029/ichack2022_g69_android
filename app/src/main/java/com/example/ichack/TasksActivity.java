@@ -21,33 +21,31 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TasksActivity extends AppCompatActivity {
-
-    public static final String ERROR_DETECTED = "No NFC tag detected!";
-    public static final String WRITE_SUCCESS = "Text written to the NFC tag successfully!";
-    public static final String WRITE_ERROR = "Error during writing, is the NFC tag close enough to your device?";
-    NfcAdapter nfcAdapter;
-    PendingIntent pendingIntent;
-    IntentFilter writeTagFilters[];
-    boolean writeMode;
-    Tag myTag;
     Context context;
-    QuestionsAdapter questionsAdapter;
 
     TextView tvNFCContent;
-    TextView messageTextview;
-    ViewPager questionsViewPager;
-    LinearLayout questionsFrameLayout;
-    ImageButton leftNav;
-    ImageButton rightNav;
-    Button submitButton;
-    Button backButton;
+    TasksAdapter tasksAdapter;
+    RecyclerView tasksRecyclerView;
 
-    String[] questions = {"how s your mum", "good", ":("};
+    List<TaskAttribute> taskAttributeList1 = new ArrayList<>();
+    List<TaskAttribute> taskAttributeList2 = new ArrayList<>();
+    List<TaskAttribute> taskAttributeList3 = new ArrayList<>();
+
+    Task[] tasks = {
+            new Task(taskAttributeList1, true, 3),
+            new Task(taskAttributeList2, false, 77),
+            new Task(taskAttributeList3, true, 100)
+    };
+
     String NFC_ID;
 
     @Override
@@ -56,226 +54,29 @@ public class TasksActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tasks);
         context = this;
 
+//        TODO: uncomment next line
+//        NFC_ID = getIntent().getStringExtra("nfc");
+
+        taskAttributeList1.add(new TaskAttribute("q1.1", "a1.1"));
+        taskAttributeList1.add(new TaskAttribute("q1.2", "a1.2"));
+        taskAttributeList1.add(new TaskAttribute("q1.3", "a1.3"));
+
+        taskAttributeList2.add(new TaskAttribute("q2.1", "a1.1"));
+        taskAttributeList2.add(new TaskAttribute("q2.2", "a2.2"));
+        taskAttributeList2.add(new TaskAttribute("q2.3", "a2.3"));
+
+        taskAttributeList3.add(new TaskAttribute("q3.1", "a3.1"));
+        taskAttributeList3.add(new TaskAttribute("q3.2", "a3.2"));
+        taskAttributeList3.add(new TaskAttribute("q3.3", "a3.3"));
+
         tvNFCContent = (TextView) findViewById(R.id.nfc_contents);
-        messageTextview = (TextView) findViewById(R.id.message_textview);
-        questionsViewPager = (ViewPager) findViewById(R.id.questionViewPager);
-        questionsFrameLayout = (LinearLayout) findViewById(R.id.questionsFrameLayout);
 
-        leftNav = (ImageButton) findViewById(R.id.left_nav);
-        rightNav = (ImageButton) findViewById(R.id.right_nav);
+        tasksRecyclerView = (RecyclerView) findViewById(R.id.tasksRecyclerView);
+        tasksAdapter = new TasksAdapter(this, tasks, NFC_ID);
 
-        submitButton = (Button) findViewById(R.id.submitButton);
-        backButton = (Button) findViewById(R.id.backButton);
+        tasksRecyclerView.setAdapter(tasksAdapter);
+        tasksRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        questionsAdapter = new QuestionsAdapter(this, questions, watcher);
-        questionsViewPager.setOffscreenPageLimit(questions.length);
-        questionsViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                int tab = questionsViewPager.getCurrentItem();
-
-                if (tab == 0) {
-                    leftNav.setVisibility(View.INVISIBLE);
-                } else {
-                    leftNav.setVisibility(View.VISIBLE);
-                }
-
-                if (tab == questionsAdapter.getCount() - 1) {
-                    rightNav.setVisibility(View.INVISIBLE);
-                } else {
-                    rightNav.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-
-        questionsViewPager.setAdapter(questionsAdapter);
-
-        questionsFrameLayout.setVisibility(View.GONE);
-
-        leftNav.setVisibility(View.INVISIBLE);
-
-        nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        if (nfcAdapter == null) {
-            // Stop here, we definitely need NFC
-            Toast.makeText(this, "This device doesn't support NFC.", Toast.LENGTH_LONG).show();
-            finish();
-        }
-
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = getIntent();
-                finish();
-                startActivity(intent);
-
-            }
-        });
-
-        submitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // TODO: send data to server
-            }
-        });
-
-        leftNav.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int tab = questionsViewPager.getCurrentItem();
-
-                if (tab > 0) {
-                    --tab;
-                }
-
-                questionsViewPager.setCurrentItem(tab);
-            }
-        });
-
-        // Images right navigating
-        rightNav.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int tab = questionsViewPager.getCurrentItem();
-
-                if (tab < questionsAdapter.getCount() - 1) {
-                    ++tab;
-                }
-
-                questionsViewPager.setCurrentItem(tab);
-            }
-        });
-
-        pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
-        tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
-        writeTagFilters = new IntentFilter[] { tagDetected };
     }
 
-    private boolean inGame(String NFC_ID) {
-        return false;
-    }
-
-    private final TextWatcher watcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after)
-        {}
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count)
-        {}
-        @Override
-        public void afterTextChanged(Editable s) {
-            EditText[] editTexts = questionsAdapter.getEditTexts();
-            boolean allQuestionsCompleted = true;
-
-            for (int i = 0; i < questionsAdapter.getCount(); ++i) {
-                if (editTexts[i].getText() == null || editTexts[i].getText().toString().trim().length() == 0) {
-                    allQuestionsCompleted = false;
-                    break;
-                }
-            }
-
-            submitButton.setEnabled(allQuestionsCompleted);
-        }
-    };
-
-    /******************************************************************************
-     **********************************Read From NFC Tag***************************
-     ******************************************************************************/
-    private String readFromIntent(Intent intent) {
-        String action = intent.getAction();
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
-                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
-                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
-            Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-            NdefMessage[] msgs = null;
-            if (rawMsgs != null) {
-                msgs = new NdefMessage[rawMsgs.length];
-                for (int i = 0; i < rawMsgs.length; i++) {
-                    msgs[i] = (NdefMessage) rawMsgs[i];
-                }
-            }
-            return buildTagViews(msgs);
-        }
-        return null;
-    }
-
-    private String buildTagViews(NdefMessage[] msgs) {
-        if (msgs == null || msgs.length == 0) return null;
-
-        String text = "";
-//        String tagId = new String(msgs[0].getRecords()[0].getType());
-        byte[] payload = msgs[0].getRecords()[0].getPayload();
-        String textEncoding = ((payload[0] & 128) == 0) ? "UTF-8" : "UTF-16"; // Get the Text Encoding
-        int languageCodeLength = payload[0] & 0063; // Get the Language Code, e.g. "en"
-        // String languageCode = new String(payload, 1, languageCodeLength, "US-ASCII");
-
-        try {
-            // Get the Text
-            text = new String(payload, languageCodeLength + 1, payload.length - languageCodeLength - 1, textEncoding);
-        } catch (UnsupportedEncodingException e) {
-            Log.e("UnsupportedEncoding", e.toString());
-        }
-
-        tvNFCContent.setText(text);
-
-        return text;
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        setIntent(intent);
-        NFC_ID = readFromIntent(intent);
-
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
-            myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        }
-        tvNFCContent.setVisibility(View.VISIBLE);
-
-        if (inGame(NFC_ID)) {
-            // TODO
-        } else {
-            questionsFrameLayout.setVisibility(View.VISIBLE);
-            submitButton.setVisibility(View.VISIBLE);
-        }
-        backButton.setVisibility(View.VISIBLE);
-        messageTextview.setText("Your ID is");
-    }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-        WriteModeOff();
-    }
-
-    @Override
-    public void onResume(){
-        super.onResume();
-        WriteModeOn();
-    }
-
-    /******************************************************************************
-     **********************************Enable Write********************************
-     ******************************************************************************/
-    private void WriteModeOn(){
-        writeMode = true;
-        nfcAdapter.enableForegroundDispatch(this, pendingIntent, writeTagFilters, null);
-    }
-    /******************************************************************************
-     **********************************Disable Write*******************************
-     ******************************************************************************/
-    private void WriteModeOff(){
-        writeMode = false;
-        nfcAdapter.disableForegroundDispatch(this);
-    }
 }

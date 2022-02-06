@@ -27,9 +27,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.toolbox.StringRequest;
-
 import java.io.UnsupportedEncodingException;
 
 public class MainActivity extends AppCompatActivity {
@@ -206,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
      **********************************Read From NFC Tag***************************
      ******************************************************************************/
     private String readFromIntent(Intent intent) {
+        startActivity(new Intent(context, TasksActivity.class));
         String action = intent.getAction();
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
                 || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
