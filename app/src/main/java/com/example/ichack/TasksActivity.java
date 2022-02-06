@@ -48,6 +48,8 @@ public class TasksActivity extends AppCompatActivity {
 
     String NFC_ID;
 
+    Button leaderboardButton;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +72,7 @@ public class TasksActivity extends AppCompatActivity {
         taskAttributeList3.add(new TaskAttribute("q3.3", "a3.3"));
 
         tvNFCContent = (TextView) findViewById(R.id.nfc_contents);
+        leaderboardButton = (Button) findViewById(R.id.leaderboardButton);
 
         tasksRecyclerView = (RecyclerView) findViewById(R.id.tasksRecyclerView);
         tasksAdapter = new TasksAdapter(this, tasks, NFC_ID);
@@ -77,6 +80,14 @@ public class TasksActivity extends AppCompatActivity {
         tasksRecyclerView.setAdapter(tasksAdapter);
         tasksRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        leaderboardButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, LeaderboardActivity.class);
+                intent.putExtra("nfc", NFC_ID);
+                startActivity(intent);
+            }
+        });
     }
 
 }

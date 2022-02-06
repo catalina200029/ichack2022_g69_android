@@ -5,9 +5,13 @@
       <map>
         <entry key="../../../../../../layout/custom_preview.xml" value="0.20677083333333332" />
         <entry key="..\:/Users/Matei/Desktop/ICHACK/ichack2022_g69_android/app/src/main/res/drawable/border.xml" value="0.2445" />
+        <entry key="..\:/Users/Matei/Desktop/ICHACK/ichack2022_g69_android/app/src/main/res/drawable/border_highlight.xml" value="0.1545" />
         <entry key="..\:/Users/Matei/Desktop/ICHACK/ichack2022_g69_android/app/src/main/res/layout/activity_leaderboard.xml" value="0.264" />
+        <entry key="..\:/Users/Matei/Desktop/ICHACK/ichack2022_g69_android/app/src/main/res/layout/activity_main.xml" value="0.11302083333333333" />
         <entry key="..\:/Users/Matei/Desktop/ICHACK/ichack2022_g69_android/app/src/main/res/layout/activity_task.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Matei/Desktop/ICHACK/ichack2022_g69_android/app/src/main/res/layout/activity_tasks.xml" value="0.24547101449275363" />
+        <entry key="..\:/Users/Matei/Desktop/ICHACK/ichack2022_g69_android/app/src/main/res/layout/content_leaderboard.xml" value="0.14479166666666668" />
+        <entry key="..\:/Users/Matei/Desktop/ICHACK/ichack2022_g69_android/app/src/main/res/layout/leaderboard_item.xml" value="0.264" />
         <entry key="..\:/Users/Matei/Desktop/ICHACK/ichack2022_g69_android/app/src/main/res/layout/question.xml" value="0.11302083333333333" />
         <entry key="..\:/Users/Matei/Desktop/ICHACK/ichack2022_g69_android/app/src/main/res/layout/task.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Matei/Desktop/ICHACK/ichack2022_g69_android/app/src/main/res/layout/task_attribute.xml" value="0.25416666666666665" />

@@ -16,11 +16,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Ichack">
-        <activity
-            android:name=".LeaderboardActivity"
-            android:exported="false"
-            android:label="@string/title_activity_leaderboard"
-            android:theme="@style/Theme.Ichack.NoActionBar" />
 
         <meta-data
             android:name="android.nfc.action.TECH_DISCOVERED"
@@ -44,7 +39,7 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
-        <activity android:name=".WaitActivity" />
+        <activity android:name=".LeaderboardActivity" />
         <activity android:name=".TasksActivity" />
         <activity android:name=".TaskActivity" />
     </application>
